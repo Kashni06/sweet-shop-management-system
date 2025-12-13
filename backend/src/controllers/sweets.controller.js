@@ -1,6 +1,10 @@
 const Sweet = require("../models/Sweet");
 
-// existing
+/**
+ * CREATE SWEET
+ * POST /api/sweets
+ * Protected
+ */
 const createSweet = async (req, res) => {
   try {
     const { name, category, price, quantity } = req.body;
@@ -18,7 +22,11 @@ const createSweet = async (req, res) => {
   }
 };
 
-// existing
+/**
+ * LIST ALL SWEETS
+ * GET /api/sweets
+ * Protected
+ */
 const getAllSweets = async (req, res) => {
   try {
     const sweets = await Sweet.find();
@@ -28,7 +36,15 @@ const getAllSweets = async (req, res) => {
   }
 };
 
-// ✅ NEW: search sweets
+/**
+ * SEARCH SWEETS
+ * GET /api/sweets/search
+ * Protected
+ * Supports:
+ *  - name
+ *  - category
+ *  - minPrice / maxPrice
+ */
 const searchSweets = async (req, res) => {
   try {
     const { name, category, minPrice, maxPrice } = req.query;
@@ -56,8 +72,54 @@ const searchSweets = async (req, res) => {
   }
 };
 
+/**
+ * UPDATE SWEET
+ * PUT /api/sweets/:id
+ * Protected
+ */
+const updateSweet = async (req, res) => {
+  try {
+    const sweetId = req.params.id;
+    const updates = req.body;
+
+    const updatedSweet = await Sweet.findByIdAndUpdate(sweetId, updates, {
+      new: true,
+    });
+
+    if (!updatedSweet) {
+      return res.status(404).json({ message: "Sweet not found" });
+    }
+
+    return res.status(200).json(updatedSweet);
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to update sweet" });
+  }
+};
+
+/**
+ * DELETE SWEET (ADMIN ONLY)
+ * DELETE /api/sweets/:id
+ */
+const deleteSweet = async (req, res) => {
+  try {
+    const sweetId = req.params.id;
+
+    const deletedSweet = await Sweet.findByIdAndDelete(sweetId);
+
+    if (!deletedSweet) {
+      return res.status(404).json({ message: "Sweet not found" });
+    }
+
+    return res.status(200).json({ message: "Sweet deleted" });
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to delete sweet" });
+  }
+};
+
 module.exports = {
   createSweet,
   getAllSweets,
   searchSweets,
+  updateSweet,
+  deleteSweet,
 };
