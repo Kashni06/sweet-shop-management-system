@@ -1,28 +1,26 @@
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import LoginPage from "../pages/LoginPage";
 
-describe("Login Page", () => {
-  test("shows email and password input fields", () => {
-    // Show the login page to the user
-    render(<LoginPage />);
+describe("Login Page", function () {
+  test("shows email and password input fields", function () {
+    render(
+      <MemoryRouter>
+        <LoginPage />
+      </MemoryRouter>
+    );
 
-    // User should see an email input
-    const emailInput = screen.getByLabelText("Email");
-
-    // User should see a password input
-    const passwordInput = screen.getByLabelText("Password");
-
-    expect(emailInput).toBeInTheDocument();
-    expect(passwordInput).toBeInTheDocument();
+    expect(screen.getByLabelText("Email")).toBeInTheDocument();
+    expect(screen.getByLabelText("Password")).toBeInTheDocument();
   });
 
-  test("shows a login button", () => {
-    render(<LoginPage />);
+  test("shows a login button", function () {
+    render(
+      <MemoryRouter>
+        <LoginPage />
+      </MemoryRouter>
+    );
 
-    const loginButton = screen.getByRole("button", {
-      name: "Login",
-    });
-
-    expect(loginButton).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Login" })).toBeInTheDocument();
   });
 });
