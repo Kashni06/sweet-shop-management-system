@@ -1,23 +1,27 @@
 function LoginPage() {
   return (
     <div>
-      {/* Login form heading */}
+      {/* Page title */}
       <h2>Login</h2>
 
-      {/* Email input field */}
-      <label>
-        Email
-        <input type="email" />
-      </label>
+      {/* Login form starts */}
+      <form>
+        {/* Email field */}
+        <div>
+          <label htmlFor="email">Email</label>
+          <input id="email" type="email" />
+        </div>
 
-      {/* Password input field */}
-      <label>
-        Password
-        <input type="password" />
-      </label>
+        {/* Password field */}
+        <div>
+          <label htmlFor="password">Password</label>
+          <input id="password" type="password" />
+        </div>
 
-      {/* Login button */}
-      <button>Login</button>
+        {/* Submit button */}
+        <button type="button">Login</button>
+      </form>
+      {/* Login form ends */}
     </div>
   );
 }
