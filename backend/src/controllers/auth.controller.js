@@ -1,15 +1,24 @@
+const User = require("../models/User");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 exports.register = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  // TEMP: skip validations for now (TDD minimal step)
-  const token = jwt.sign({ email }, process.env.JWT_SECRET || "test_secret", {
-    expiresIn: "1h",
-  });
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  return res.status(201).json({
-    message: "User registered successfully",
-    token, // 👈 THIS FIXES THE TEST
-  });
+    const user = await User.create({
+      email,
+      password: hashedPassword,
+    });
+
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    res.status(201).json({ token });
+  } catch (err) {
+    res.status(500).json({ message: "Registration failed" });
+  }
 };
