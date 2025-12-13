@@ -10,7 +10,8 @@ describe("Application Routing", function () {
       </MemoryRouter>
     );
 
-    expect(screen.getByText("Login")).toBeInTheDocument();
+    // Login page heading
+    expect(screen.getByRole("heading", { name: "Login" })).toBeInTheDocument();
   });
 
   test("shows sweet list page on /dashboard route", function () {
@@ -20,6 +21,9 @@ describe("Application Routing", function () {
       </MemoryRouter>
     );
 
-    expect(screen.getByText("Available Sweets")).toBeInTheDocument();
+    // Dashboard page heading
+    expect(
+      screen.getByRole("heading", { name: "Available Sweets" })
+    ).toBeInTheDocument();
   });
 });

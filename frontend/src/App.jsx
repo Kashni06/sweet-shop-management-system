@@ -1,9 +1,13 @@
+import { Routes, Route } from "react-router-dom";
+import LoginPage from "./pages/LoginPage";
+import SweetListPage from "./pages/SweetListPage";
+
 function App() {
   return (
-    <div>
-      {/* Application title shown to all users */}
-      <h1>Sweet Shop Management System</h1>
-    </div>
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/dashboard" element={<SweetListPage />} />
+    </Routes>
   );
 }
 
