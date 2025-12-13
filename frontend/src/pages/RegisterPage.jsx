@@ -1,25 +1,25 @@
 import { Link, useNavigate } from "react-router-dom";
 
-function LoginPage() {
+function RegisterPage() {
   const navigate = useNavigate();
 
-  function handleLogin(e) {
+  function handleRegister(e) {
     e.preventDefault();
-    navigate("/dashboard");
+    navigate("/login");
   }
 
   return (
     <div style={styles.page}>
-      <form style={styles.card} onSubmit={handleLogin}>
-        <div style={styles.icon}>🍭</div>
+      <form style={styles.card} onSubmit={handleRegister}>
+        <div style={styles.icon}>🍬</div>
 
-        <h1 style={styles.title}>Sweet Shop</h1>
-        <p style={styles.subtitle}>Login to your account</p>
+        <h1 style={styles.title}>Create Account</h1>
+        <p style={styles.subtitle}>Join the Sweet Shop</p>
 
         <label style={styles.label}>Email</label>
         <input
           type="email"
-          placeholder="admin@example.com or user@example.com"
+          placeholder="you@example.com"
           style={styles.input}
           required
         />
@@ -32,14 +32,22 @@ function LoginPage() {
           required
         />
 
+        <label style={styles.label}>Confirm Password</label>
+        <input
+          type="password"
+          placeholder="••••••••"
+          style={styles.input}
+          required
+        />
+
         <button type="submit" style={styles.button}>
-          Login
+          Register
         </button>
 
         <p style={styles.footerText}>
-          Don’t have an account?{" "}
-          <Link to="/register" style={styles.link}>
-            Register
+          Already have an account?{" "}
+          <Link to="/login" style={styles.link}>
+            Login
           </Link>
         </p>
       </form>
@@ -86,7 +94,7 @@ const styles = {
     padding: "14px",
     borderRadius: "12px",
     border: "none",
-    background: "linear-gradient(135deg, #ec4899, #8b5cf6)",
+    background: "linear-gradient(135deg, #f97316, #ec4899)",
     color: "#fff",
     fontSize: "16px",
     fontWeight: "bold",
@@ -100,4 +108,4 @@ const styles = {
   },
 };
 
-export default LoginPage;
+export default RegisterPage;
