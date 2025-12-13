@@ -4,10 +4,11 @@ function Navbar() {
   return (
     <nav
       style={{
-        padding: "12px 20px",
-        display: "flex",
-        gap: "16px",
+        padding: "14px 20px",
+        backgroundColor: "#ffffff",
         borderBottom: "1px solid #ddd",
+        display: "flex",
+        gap: "20px",
         fontWeight: "bold",
       }}
     >

@@ -124,7 +124,7 @@ function SweetListPage() {
       <hr />
 
       {/* Admin Panel */}
-      <h3>Admin Panel – Add New Sweet</h3>
+      <h3>Admin Panel – Add / Delete Sweets</h3>
 
       <form onSubmit={handleAddSweet} style={{ display: "flex", gap: "10px" }}>
         <input
