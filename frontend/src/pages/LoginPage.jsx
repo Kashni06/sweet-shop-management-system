@@ -1,11 +1,36 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import api from "../api/api"; // axios instance
 
 function LoginPage() {
   const navigate = useNavigate();
 
-  function handleLogin(e) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  async function handleLogin(e) {
     e.preventDefault();
-    navigate("/dashboard");
+    setError("");
+
+    console.log("LOGIN CLICKED", email, password);
+
+    try {
+      const res = await api.post("/auth/login", {
+        email,
+        password,
+      });
+      console.log("LOGIN RESPONSE:", res.data);
+
+      // Save JWT token
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("role", res.data.role);
+
+      // Navigate to dashboard
+      navigate("/dashboard");
+    } catch (err) {
+      setError("Invalid email or password");
+    }
   }
 
   return (
@@ -16,11 +41,15 @@ function LoginPage() {
         <h1 style={styles.title}>Sweet Shop</h1>
         <p style={styles.subtitle}>Login to your account</p>
 
+        {error && <p style={{ color: "red" }}>{error}</p>}
+
         <label style={styles.label}>Email</label>
         <input
           type="email"
           placeholder="admin@example.com or user@example.com"
           style={styles.input}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
 
@@ -29,6 +58,8 @@ function LoginPage() {
           type="password"
           placeholder="••••••••"
           style={styles.input}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           required
         />
 
@@ -47,6 +78,7 @@ function LoginPage() {
   );
 }
 
+/* ✅ styles object (was missing) */
 const styles = {
   page: {
     minHeight: "100vh",
@@ -100,4 +132,5 @@ const styles = {
   },
 };
 
+/* ✅ THIS WAS THE MAIN MISSING LINE */
 export default LoginPage;

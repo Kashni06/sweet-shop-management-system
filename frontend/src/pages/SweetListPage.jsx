@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import api from "../api/api";
+const role = localStorage.getItem("role");
 
 function SweetListPage() {
   /* -------------------- STATE -------------------- */
@@ -8,22 +10,25 @@ function SweetListPage() {
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
 
-  const [sweets, setSweets] = useState([
-    {
-      id: 1,
-      name: "Gulab Jamun",
-      category: "Indian",
-      price: 20,
-      quantity: 10,
-    },
-    {
-      id: 2,
-      name: "Chocolate Bar",
-      category: "Chocolate",
-      price: 10,
-      quantity: 0,
-    },
-  ]);
+  const [sweets, setSweets] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  /* -------------------- FETCH SWEETS -------------------- */
+
+  useEffect(() => {
+    fetchSweets();
+  }, []);
+
+  async function fetchSweets() {
+    try {
+      const res = await api.get("/sweets");
+      setSweets(res.data);
+    } catch (err) {
+      console.error("Failed to load sweets");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   /* -------------------- FILTER LOGIC -------------------- */
 
@@ -36,7 +41,6 @@ function SweetListPage() {
       selectedCategory === "All" || sweet.category === selectedCategory;
 
     const matchesMinPrice = minPrice === "" || sweet.price >= Number(minPrice);
-
     const matchesMaxPrice = maxPrice === "" || sweet.price <= Number(maxPrice);
 
     return matchesName && matchesCategory && matchesMinPrice && matchesMaxPrice;
@@ -44,28 +48,51 @@ function SweetListPage() {
 
   /* -------------------- ACTIONS -------------------- */
 
-  function handleDelete(id) {
-    setSweets(sweets.filter((sweet) => sweet.id !== id));
+  async function handlePurchase(id) {
+    try {
+      const res = await api.post(`/sweets/${id}/purchase`);
+
+      // update UI instantly
+      setSweets(sweets.map((sweet) => (sweet._id === id ? res.data : sweet)));
+    } catch {
+      alert("Purchase failed");
+    }
   }
 
-  function handleAddSweet(e) {
-    e.preventDefault();
+  async function handleDelete(id) {
+    try {
+      await api.delete(`/sweets/${id}`);
+      setSweets(sweets.filter((sweet) => sweet._id !== id));
+    } catch {
+      alert("Admin only action");
+    }
+  }
 
+  async function handleAddSweet(e) {
+    e.preventDefault();
     const form = e.target;
 
     const newSweet = {
-      id: Date.now(),
       name: form.name.value,
       category: form.category.value,
       price: Number(form.price.value),
       quantity: Number(form.quantity.value),
     };
 
-    setSweets([...sweets, newSweet]);
-    form.reset();
+    try {
+      const res = await api.post("/sweets", newSweet);
+      setSweets([...sweets, res.data]);
+      form.reset();
+    } catch {
+      alert("Only admin can add sweet");
+    }
   }
 
   /* -------------------- UI -------------------- */
+
+  if (loading) {
+    return <h2 style={{ textAlign: "center" }}>Loading sweets...</h2>;
+  }
 
   return (
     <div style={{ padding: "40px", background: "#fafafa" }}>
@@ -113,7 +140,7 @@ function SweetListPage() {
       {/* -------- Sweet Cards -------- */}
       <div style={styles.cardGrid}>
         {filteredSweets.map((sweet) => (
-          <div key={sweet.id} style={styles.card}>
+          <div key={sweet._id} style={styles.card}>
             <h2>{sweet.name}</h2>
             <p>
               <b>Category:</b> {sweet.category}
@@ -128,6 +155,7 @@ function SweetListPage() {
             <div style={{ display: "flex", gap: "10px" }}>
               <button
                 disabled={sweet.quantity === 0}
+                onClick={() => handlePurchase(sweet._id)}
                 style={{
                   ...styles.purchaseBtn,
                   background: sweet.quantity === 0 ? "#ccc" : "#4caf50",
@@ -137,7 +165,7 @@ function SweetListPage() {
               </button>
 
               <button
-                onClick={() => handleDelete(sweet.id)}
+                onClick={() => handleDelete(sweet._id)}
                 style={styles.deleteBtn}
               >
                 Delete (Admin)
@@ -164,15 +192,15 @@ function SweetListPage() {
         />
         <input
           name="price"
-          placeholder="Price"
           type="number"
+          placeholder="Price"
           required
           style={styles.input}
         />
         <input
           name="quantity"
-          placeholder="Quantity"
           type="number"
+          placeholder="Quantity"
           required
           style={styles.input}
         />
@@ -184,7 +212,7 @@ function SweetListPage() {
   );
 }
 
-/* -------------------- STYLES -------------------- */
+/* -------------------- STYLES (UNCHANGED) -------------------- */
 
 const styles = {
   filters: {

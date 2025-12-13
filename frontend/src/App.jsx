@@ -3,6 +3,7 @@ import LoginPage from "./pages/LoginPage";
 import SweetListPage from "./pages/SweetListPage";
 import Navbar from "./components/Navbar";
 import RegisterPage from "./pages/RegisterPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -11,8 +12,16 @@ function App() {
 
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/dashboard" element={<SweetListPage />} />
         <Route path="/register" element={<RegisterPage />} />
+
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <SweetListPage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </div>
   );

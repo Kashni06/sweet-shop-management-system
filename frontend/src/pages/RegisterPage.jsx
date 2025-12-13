@@ -1,11 +1,35 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import api from "../api/api"; // ✅ axios instance
 
 function RegisterPage() {
   const navigate = useNavigate();
 
-  function handleRegister(e) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+
+  async function handleRegister(e) {
     e.preventDefault();
-    navigate("/login");
+    setError("");
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    try {
+      await api.post("/auth/register", {
+        email,
+        password,
+      });
+
+      // ✅ after successful register → go to login
+      navigate("/login");
+    } catch (err) {
+      setError(err.response?.data?.message || "Registration failed");
+    }
   }
 
   return (
@@ -16,11 +40,15 @@ function RegisterPage() {
         <h1 style={styles.title}>Create Account</h1>
         <p style={styles.subtitle}>Join the Sweet Shop</p>
 
+        {error && <p style={{ color: "red" }}>{error}</p>}
+
         <label style={styles.label}>Email</label>
         <input
           type="email"
           placeholder="you@example.com"
           style={styles.input}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
 
@@ -29,6 +57,8 @@ function RegisterPage() {
           type="password"
           placeholder="••••••••"
           style={styles.input}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           required
         />
 
@@ -37,6 +67,8 @@ function RegisterPage() {
           type="password"
           placeholder="••••••••"
           style={styles.input}
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
 

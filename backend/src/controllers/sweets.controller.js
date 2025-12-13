@@ -85,33 +85,38 @@ const deleteSweet = async (req, res) => {
   }
 };
 
-// PURCHASE SWEET
+// ✅ PURCHASE SWEET (FIXED)
 const purchaseSweet = async (req, res) => {
   try {
-    const purchaseQty = Number(req.body.quantity);
     const sweet = await Sweet.findById(req.params.id);
 
     if (!sweet) {
       return res.status(404).json({ message: "Sweet not found" });
     }
 
-    if (sweet.quantity < purchaseQty) {
-      return res.status(400).json({ message: "Insufficient stock" });
+    if (sweet.quantity <= 0) {
+      return res.status(400).json({ message: "Out of stock" });
     }
 
-    sweet.quantity -= purchaseQty;
+    sweet.quantity -= 1;
     await sweet.save();
 
     return res.status(200).json(sweet);
   } catch (error) {
+    console.error("PURCHASE ERROR:", error);
     return res.status(500).json({ message: "Failed to purchase sweet" });
   }
 };
 
-// ✅ RESTOCK SWEET (ADMIN ONLY)
+// RESTOCK SWEET (ADMIN ONLY)
 const restockSweet = async (req, res) => {
   try {
     const restockQty = Number(req.body.quantity);
+
+    if (restockQty <= 0) {
+      return res.status(400).json({ message: "Invalid quantity" });
+    }
+
     const sweet = await Sweet.findById(req.params.id);
 
     if (!sweet) {
