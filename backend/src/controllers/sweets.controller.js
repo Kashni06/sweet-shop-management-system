@@ -85,7 +85,7 @@ const deleteSweet = async (req, res) => {
   }
 };
 
-// ✅ PURCHASE SWEET
+// PURCHASE SWEET
 const purchaseSweet = async (req, res) => {
   try {
     const purchaseQty = Number(req.body.quantity);
@@ -108,6 +108,25 @@ const purchaseSweet = async (req, res) => {
   }
 };
 
+// ✅ RESTOCK SWEET (ADMIN ONLY)
+const restockSweet = async (req, res) => {
+  try {
+    const restockQty = Number(req.body.quantity);
+    const sweet = await Sweet.findById(req.params.id);
+
+    if (!sweet) {
+      return res.status(404).json({ message: "Sweet not found" });
+    }
+
+    sweet.quantity += restockQty;
+    await sweet.save();
+
+    return res.status(200).json(sweet);
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to restock sweet" });
+  }
+};
+
 module.exports = {
   createSweet,
   getAllSweets,
@@ -115,4 +134,5 @@ module.exports = {
   updateSweet,
   deleteSweet,
   purchaseSweet,
+  restockSweet,
 };
