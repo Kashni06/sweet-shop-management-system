@@ -1,10 +1,6 @@
 const Sweet = require("../models/Sweet");
 
-/**
- * CREATE SWEET
- * POST /api/sweets
- * Protected
- */
+// CREATE SWEET
 const createSweet = async (req, res) => {
   try {
     const { name, category, price, quantity } = req.body;
@@ -22,11 +18,7 @@ const createSweet = async (req, res) => {
   }
 };
 
-/**
- * LIST ALL SWEETS
- * GET /api/sweets
- * Protected
- */
+// LIST SWEETS
 const getAllSweets = async (req, res) => {
   try {
     const sweets = await Sweet.find();
@@ -36,28 +28,15 @@ const getAllSweets = async (req, res) => {
   }
 };
 
-/**
- * SEARCH SWEETS
- * GET /api/sweets/search
- * Protected
- * Supports:
- *  - name
- *  - category
- *  - minPrice / maxPrice
- */
+// SEARCH SWEETS
 const searchSweets = async (req, res) => {
   try {
     const { name, category, minPrice, maxPrice } = req.query;
 
     const query = {};
 
-    if (name) {
-      query.name = new RegExp(name, "i"); // case-insensitive
-    }
-
-    if (category) {
-      query.category = category;
-    }
+    if (name) query.name = new RegExp(name, "i");
+    if (category) query.category = category;
 
     if (minPrice || maxPrice) {
       query.price = {};
@@ -72,19 +51,14 @@ const searchSweets = async (req, res) => {
   }
 };
 
-/**
- * UPDATE SWEET
- * PUT /api/sweets/:id
- * Protected
- */
+// UPDATE SWEET
 const updateSweet = async (req, res) => {
   try {
-    const sweetId = req.params.id;
-    const updates = req.body;
-
-    const updatedSweet = await Sweet.findByIdAndUpdate(sweetId, updates, {
-      new: true,
-    });
+    const updatedSweet = await Sweet.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
 
     if (!updatedSweet) {
       return res.status(404).json({ message: "Sweet not found" });
@@ -96,17 +70,12 @@ const updateSweet = async (req, res) => {
   }
 };
 
-/**
- * DELETE SWEET (ADMIN ONLY)
- * DELETE /api/sweets/:id
- */
+// DELETE SWEET (ADMIN ONLY)
 const deleteSweet = async (req, res) => {
   try {
-    const sweetId = req.params.id;
+    const deleted = await Sweet.findByIdAndDelete(req.params.id);
 
-    const deletedSweet = await Sweet.findByIdAndDelete(sweetId);
-
-    if (!deletedSweet) {
+    if (!deleted) {
       return res.status(404).json({ message: "Sweet not found" });
     }
 
@@ -116,10 +85,34 @@ const deleteSweet = async (req, res) => {
   }
 };
 
+// ✅ PURCHASE SWEET
+const purchaseSweet = async (req, res) => {
+  try {
+    const purchaseQty = Number(req.body.quantity);
+    const sweet = await Sweet.findById(req.params.id);
+
+    if (!sweet) {
+      return res.status(404).json({ message: "Sweet not found" });
+    }
+
+    if (sweet.quantity < purchaseQty) {
+      return res.status(400).json({ message: "Insufficient stock" });
+    }
+
+    sweet.quantity -= purchaseQty;
+    await sweet.save();
+
+    return res.status(200).json(sweet);
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to purchase sweet" });
+  }
+};
+
 module.exports = {
   createSweet,
   getAllSweets,
   searchSweets,
   updateSweet,
   deleteSweet,
+  purchaseSweet,
 };

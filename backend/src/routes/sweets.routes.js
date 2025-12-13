@@ -1,11 +1,13 @@
 const express = require("express");
 const router = express.Router();
+
 const {
   createSweet,
   getAllSweets,
   searchSweets,
   updateSweet,
   deleteSweet,
+  purchaseSweet,
 } = require("../controllers/sweets.controller");
 
 const authMiddleware = require("../middleware/auth.middleware");
@@ -15,8 +17,9 @@ router.post("/", authMiddleware, createSweet);
 router.get("/", authMiddleware, getAllSweets);
 router.get("/search", authMiddleware, searchSweets);
 router.put("/:id", authMiddleware, updateSweet);
-
-// ✅ DELETE (Admin only)
 router.delete("/:id", authMiddleware, adminMiddleware, deleteSweet);
+
+// ✅ Inventory
+router.post("/:id/purchase", authMiddleware, purchaseSweet);
 
 module.exports = router;
