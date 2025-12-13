@@ -3,13 +3,14 @@ const router = express.Router();
 const {
   createSweet,
   getAllSweets,
+  searchSweets,
 } = require("../controllers/sweets.controller");
 const authMiddleware = require("../middleware/auth.middleware");
 
-// POST /api/sweets
 router.post("/", authMiddleware, createSweet);
-
-// ✅ GET /api/sweets
 router.get("/", authMiddleware, getAllSweets);
+
+// ✅ SEARCH
+router.get("/search", authMiddleware, searchSweets);
 
 module.exports = router;
